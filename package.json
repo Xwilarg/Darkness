@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "minify": "^9.1.0",
+    "mkdirp": "^1.0.4"
+  },
+  "scripts": {
+    "build": "mkdirp js/ && minify src/index.js > js/index.js"
+  }
+}

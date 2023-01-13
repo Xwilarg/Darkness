@@ -1,0 +1,50 @@
+#rpg-display {
+    display: flex;
+    padding: 10px;
+}
+
+#rpg-output {
+    width: calc(95vw - 300px);
+    height: 375px;
+    border: solid 1px #555;
+    text-align: left;
+    overflow-y: scroll;
+}
+
+#rpg-map {
+    display: flex;
+    flex-flow: column;
+}
+
+#rpg-map h4 {
+    margin: 0;
+    font-size: 25px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+}
+
+#rpg-mini-map {
+    width: 300px;
+    height: 300px;
+    border: solid 1px #555;
+}
+
+#rpg-input {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+}
+
+#rpg input {
+    width: calc(100% - 200px);
+    height: 30px;
+    border: solid 1px #555;
+    background-color: #222;
+    caret-color: #ccc;
+    color: #ccc
+}
+
+#rpg button {
+    height: 30px;
+    margin-left: 10px;
+}
