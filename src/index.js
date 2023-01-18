@@ -4,25 +4,39 @@ let rpgInput;
 let mentalHp = 20;
 
 let current = "nowhere";
+let forward = {
+    x: 0,
+    y: 1
+}
 
 let actions = {
     "HELP": {
-        "argCount": 0
+        "argCountMin": 0,
+        "argCountMax": 0
     },
     "ITEMS": {
-        "argCount": 0
+        "argCountMin": 0,
+        "argCountMax": 0
     },
     "TOUCH": {
-        "argCount": 1
+        "argCountMin": 1,
+        "argCountMax": 1
     },
     "USE": {
-        "argCount": 2
+        "argCountMin": 2,
+        "argCountMax": 2
     },
     "WAIT": {
-        "argCount": 0
+        "argCountMin": 0,
+        "argCountMax": 0
     },
-    "WALK": {
-        "argCount": 0
+    "MOVE": {
+        "argCountMin": 0,
+        "argCountMax": 1
+    },
+    "DEBUG": {
+        "argCountMin": 0,
+        "argCountMax": 0
     }
 };
 
@@ -45,12 +59,12 @@ function rpg_pos_toward(xMe, yMe, xTarget, yTarget) {
 function rpg_move_random() {
     let dist = distance(pos.x, pos.y, posStranger.x, posStranger.y);
     if (dist > 8) {
-        let dir = rpg_pos_toward();
+        let dir = rpg_pos_toward(pos.x, pos.y, posStranger.x, posStranger.y);
         pos.x += dir.x;
         pos.y += dir.y;
     }
     else if (dist < 3) {
-        let dir = rpg_pos_toward();
+        let dir = rpg_pos_toward(pos.x, pos.y, posStranger.x, posStranger.y);
         pos.x -= dir.x;
         pos.y -= dir.y;
     } else {
@@ -60,6 +74,59 @@ function rpg_move_random() {
         else if (r == 2) pos.y += 1;
         else if (r == 3) pos.y -= 1;
     }
+}
+
+function rpg_dir_vector_to_text(pos) {
+    if (forward.x === pos.x && forward.y === pos.y) {
+        return "FRONT";
+    }
+    if (
+        (forward.x === -pos.x && forward.y === pos.y) ||
+        (forward.x === pos.x && forward.y === -pos.y)
+    ) {
+        return "BACK";
+    }
+    if (
+        (forward.y === 1 && pos.x === -1) ||
+        (forward.y === -1 && pos.x === 1) ||
+        (forward.x === 1 && pos.y === -1) ||
+        (forward.x === -1 && pos.y === 1)
+    ) {
+        return "LEFT";
+    }
+    return "RIGHT";
+}
+
+function rpg_text_to_dir_vector(text) {
+    if (text === "FRONT") {
+        return forward;
+    }
+    if (text === "BACK") {
+        return {
+            x: -forward.x,
+            y: -forward.y
+        };
+    }
+    let targetX = 0;
+    let targetY = 0;
+    if (text === "LEFT") {
+        if (forward.y === 1) targetX = -1;
+        else if (forward.y === -1) targetX = 1;
+        if (forward.x === 1) targetY = -1;
+        else if (forward.x === -1) targetY = 1;
+    } else if (text === "RIGHT") {
+        if (forward.y === 1) targetX = 1;
+        else if (forward.y === -1) targetX = -1;
+        if (forward.x === 1) targetY = 1;
+        else if (forward.x === -1) targetY = -1;
+    } else {
+        return null;
+    }
+
+    return {
+        x: targetX,
+        y: targetY
+    };
 }
 
 function rpg_clean(word) {
@@ -76,6 +143,15 @@ function rpg_clean(word) {
 
 let locations = {
     "nowhere": {
+        "DEBUG": (_) => {
+            if (window.location.hostname === "localhost") {
+                rpg_write_narration(`You close your eyes and feel instilled with divine knowledge<br/>You are at position (${pos.x} ; ${pos.y})<br/>Your forward direction is (${forward.x} ; ${forward.y})<br/>Target position is (${posStranger.x} ; ${posStranger.y})`);
+            } else {
+                rpg_write_narration("You close your eyes but nothing change");
+                decrease_hp();
+            }
+            return true;
+        },
         "ITEMS": (_) => {
             rpg_write_narration(`You check inside your pockets and find what feel like a round ${rpg_item("stone")}`);
             decrease_hp();
@@ -86,23 +162,23 @@ let locations = {
             {
                 case "GROUND":
                     rpg_write_narration(`You touch the ${rpg_item("ground")}, it feels cold and hard`);
-                    decrease_hp();
                     break;
 
                 case "STONE":
                     rpg_write_narration(`You take the ${rpg_item("stone")} from your pocket, it's been carved into a marble and feels somehow a bit warm`);
-                    decrease_hp();
                     break;
 
                 default:
                     return false;
             }
+            decrease_hp();
             return true;
         },
         "USE": (args) => {
             if (rpg_clean(args[0]) === "STONE" && rpg_clean(args[1]) === "GROUND") {
-                rpg_write_narration(`TODO`);
+                rpg_write_narration(`You place the stone on the ground, when you take it back, you feel like it slightly moved to your ${rpg_item(rpg_dir_vector_to_text(rpg_pos_toward(pos.x, pos.y, posStranger.x, posStranger.y)).toLowerCase())}`);
                 decrease_hp();
+                return true;
             }
             return false;
         },
@@ -111,10 +187,21 @@ let locations = {
             decrease_hp();
             return true;
         },
-        "WALK": (_) => {
-            rpg_write_narration("You take a random direction and walk for a bit, you don't feel like anything changed around you");
-            rpg_move_random();
-            console.log(pos);
+        "MOVE": (args) => {
+            if (args.length === 0) {
+                rpg_write_narration("You take a random direction and walk for a bit, you don't feel like anything changed around you");
+                rpg_move_random();
+            } else {
+                const targetDir = rpg_text_to_dir_vector(args[0]);
+                if (targetDir === null) {
+                    return false;
+                }
+                rpg_write_narration(`You walk to your ${args[0].toLowerCase()} but don't feel like anything changed around you`);
+                pos.x += targetDir.x;
+                pos.y += targetDir.y;
+                forward.x = targetDir.x;
+                forward.y = targetDir.y;
+            }
             decrease_hp();
             return true;
         }
@@ -176,7 +263,7 @@ function rpg_on_input() {
         return; // Empty input, we just ignore it
     }
 
-    rpgDiv.innerHTML += `<b>> ${input}</b><br/>`;
+    rpgDiv.innerHTML += `<b>> ${input} ${args}</b><br/>`;
     if (mentalHp === 0)
     {
         rpg_write_narration("There is no hope");
@@ -185,7 +272,7 @@ function rpg_on_input() {
     {
         rpg_write_narration("Unknown action, enter \"Help\" for the list of actions");
     }
-    else if (actions[input].argCount !== args.length)
+    else if (args.length < actions[input].argCountMin || args.length > actions[input].argCountMax)
     {
         rpg_write_narration(`${to_sentence_case(input)} takes ${actions[input].argCount} argument${(actions[input].argCount > 1 ? "s" : "")}`);
     }
