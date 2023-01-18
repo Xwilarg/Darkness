@@ -262,7 +262,7 @@ function rpg_item(word) {
 }
 
 function rpg_on_input() {
-    const text = rpgInput.value.toUpperCase().split(' ');
+    const text = rpgInput.value.toUpperCase().trim().split(' ');
     const input = text[0];
     const args = text.slice(1);
 
