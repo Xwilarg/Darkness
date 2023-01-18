@@ -153,7 +153,7 @@ let locations = {
             return true;
         },
         "ITEMS": (_) => {
-            rpg_write_narration(`You check inside your pockets and find what feel like a round ${rpg_item("stone")}`);
+            rpg_write_narration(`You check inside your pockets and find what feels like a round ${rpg_item("stone")}`);
             decrease_hp();
             return true;
         },
@@ -202,6 +202,9 @@ let locations = {
                 forward.x = targetDir.x;
                 forward.y = targetDir.y;
             }
+            if (pos.x === posStranger.x && pos.y === posStranger.y) { // Shouldn't happen in random move since we rig it but might as well be safe
+                rpg_write_narration("TODO");
+            }
             decrease_hp();
             return true;
         }
@@ -214,6 +217,11 @@ function rpg_init() {
     posStranger = { x: x, y: y };
 
     document.getElementById("rpg-enter").addEventListener("click", rpg_on_input);
+    document.getElementById("rpg-input").addEventListener("keyup", (e) => {
+        if (e.code === "Enter") {
+            rpg_on_input();
+        }
+    })
     rpgInput = document.getElementById("rpg-input-field");
     rpgDiv = document.getElementById("rpg-output");
 
