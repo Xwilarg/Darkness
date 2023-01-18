@@ -282,7 +282,11 @@ function rpg_on_input() {
     }
     else if (args.length < actions[input].argCountMin || args.length > actions[input].argCountMax)
     {
-        rpg_write_narration(`${to_sentence_case(input)} takes ${actions[input].argCount} argument${(actions[input].argCount > 1 ? "s" : "")}`);
+        if (actions[input].argCountMin === actions[input].argCountMax) {
+            rpg_write_narration(`${to_sentence_case(input)} takes ${actions[input].argCountMin} argument${(actions[input].argCountMin > 1 ? "s" : "")}`);
+        } else {
+            rpg_write_narration(`${to_sentence_case(input)} takes ${actions[input].argCountMin} to ${actions[input].argCountMax} argument${(actions[input].argCountMax > 1 ? "s" : "")}`);
+        }
     }
     else
     {
