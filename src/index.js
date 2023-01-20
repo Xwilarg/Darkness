@@ -1,7 +1,7 @@
 let rpgDiv;
 let rpgInput;
 
-let mentalHp = 20;
+let mentalHp = 15;
 
 let current = "nowhere";
 let forward = {
@@ -137,6 +137,15 @@ function rpg_clean(word) {
         case "STONE": case "ROCK": case "MARBLE":
             return "STONE";
 
+        case "HAND": case "HANDS": case "FINGER": case "FINGERS":
+            return "HANDS";
+
+        case "HAIR": case "HEAD":
+            return "HEAD";
+
+        case "BODY": case "SELF": case "CLOTHES":
+            return "BODY";
+
         default: return word;
     }
 }
@@ -167,6 +176,16 @@ let locations = {
                 case "STONE":
                     rpg_write_narration(`You take the ${rpg_item("stone")} from your pocket, it's been carved into a marble and feels somehow a bit warm`);
                     break;
+
+                case "HANDS":
+                    rpg_write_narration(`Your take your ${rpg_item("hand")} into the other, they feel soft yet skinny enough so you can feel your veins`);
+                    break;
+
+                case "HEAD":
+                    rpg_write_narration(`You pass your ${rpg_init("hand")} in your ${rpg_init("hair")}, it's all tangled and would probably feel better if you were to brush it`);
+
+                case "BODY":
+                    rpg_write_narration(`You pass your ${rpg_init("hands")} over your ${rpg_init("clothes")}, you seem to be wearing a cotton pants and short-sleeves shirt`);
 
                 default:
                     return false;
@@ -261,6 +280,13 @@ function rpg_item(word) {
     return `<b>${word}</b>`;
 }
 
+function rpg_argument_text(action) {
+    if (action.argCountMin === action.argCountMax) {
+        return `${action.argCountMin} argument${(action.argCountMin > 1 ? "s" : "")}`;
+    }
+    return `${action.argCountMin} to ${action.argCountMax} argument${(action.argCountMax > 1 ? "s" : "")}`;
+}
+
 function rpg_on_input() {
     const text = rpgInput.value.toUpperCase().trim().split(' ');
     const input = text[0];
@@ -282,14 +308,15 @@ function rpg_on_input() {
     }
     else if (args.length < actions[input].argCountMin || args.length > actions[input].argCountMax)
     {
-        if (actions[input].argCountMin === actions[input].argCountMax) {
-            rpg_write_narration(`${to_sentence_case(input)} takes ${actions[input].argCountMin} argument${(actions[input].argCountMin > 1 ? "s" : "")}`);
-        } else {
-            rpg_write_narration(`${to_sentence_case(input)} takes ${actions[input].argCountMin} to ${actions[input].argCountMax} argument${(actions[input].argCountMax > 1 ? "s" : "")}`);
-        }
+        rpg_write_narration(`${to_sentence_case(input)} takes ${rpg_argument_text(actions[input])}`);
     }
     else
     {
+        if (input === "USE" && rpg_clean(args[0]) === "HANDS") { // Using your hands on smth is the same as touching it
+            input = "TOUCH";
+            args = [args[1]];
+        }
+
         let choices = locations[current];
         if (!(input in choices) || !choices[input](args)) {
             switch (input)
@@ -299,7 +326,7 @@ function rpg_on_input() {
                     break;
 
                 case "HELP":
-                    rpg_write_narration(`Possible actions:<br/>${Object.keys(actions).map(x => to_sentence_case(x)).join("<br/>")}`);
+                    rpg_write_narration(`Possible actions:<br/>${Object.keys(actions).map(x => `${to_sentence_case(x)} (${rpg_argument_text(actions[x])})`).join("<br/>")}`);
                     break;
 
                 default:
