@@ -1,3 +1,3 @@
 window.onload = function () {
-    rpg_init();
+    new Game_Darkness();
 };

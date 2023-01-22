@@ -4,7 +4,7 @@
     "mkdirp": "^1.0.4"
   },
   "scripts": {
-    "build": "mkdirp js/ && minify src/index.js > js/index.js && minify src/init.js > js/init.js",
+    "build": "mkdirp js/ && minify src/Game.js > js/Game.js && minify src/init.js > js/init.js",
     "serve": "npm run build && php -S localhost:8182"
   }
 }

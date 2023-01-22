@@ -53,3 +53,7 @@
     height: 30px;
     margin-left: 10px;
 }
+
+.rpg-error {
+    color: red;
+}
