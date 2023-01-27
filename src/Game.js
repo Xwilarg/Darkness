@@ -36,36 +36,50 @@ class Game_Darkness {
     actions = {
         "HELP": {
             "argCountMin": 0,
-            "argCountMax": 0
+            "argCountMax": 0,
+            "looseHP": false
         },
         "ITEMS": {
             "argCountMin": 0,
-            "argCountMax": 0
+            "argCountMax": 0,
+            "looseHP": true
         },
         "TOUCH": {
             "argCountMin": 1,
-            "argCountMax": 1
+            "argCountMax": 1,
+            "looseHP": true
         },
         "USE": {
             "argCountMin": 2,
-            "argCountMax": 2
+            "argCountMax": 2,
+            "looseHP": true
         },
         "WAIT": {
             "argCountMin": 0,
-            "argCountMax": 0
+            "argCountMax": 0,
+            "looseHP": true
         },
         "MOVE": {
             "argCountMin": 0,
-            "argCountMax": 1
+            "argCountMax": 1,
+            "looseHP": true
         },
         "DEBUG": {
             "argCountMin": 0,
-            "argCountMax": 0
+            "argCountMax": 0,
+            "looseHP": false
+        },
+        "ASK": {
+            "argCountMin": 1,
+            "argCountMax": 1,
+            "looseHP": true
         }
     };
 
     pos = { x: 0, y: 0 };
     posStranger;
+
+    strangerRelation = 0;
 
     distance(x1, y1, x2, y2) {
         return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2);
@@ -170,6 +184,15 @@ class Game_Darkness {
             case "BODY": case "SELF": case "CLOTHES":
                 return "BODY";
 
+            case "STRANGER": case "SOMEONE":
+                return "STRANGER";
+
+            case "PRONOUN": case "PRONOUNS":
+                return "PRONOUN";
+
+            case "WEATHER":
+                return "WEATHER";
+
             default: return word;
         }
     }
@@ -178,8 +201,36 @@ class Game_Darkness {
         return this.pos.x === this.posStranger.x && this.pos.y === this.posStranger.y;
     }
 
+    first_meeting() {
+        this.write_dialogue("I.. didn't expect to find someone", "stranger");
+        this.write_narration("You feel more at ease knowing you are not alone anymore");
+        this.strangerRelation = 1;
+    }
+
     locations = {
         "nowhere": {
+            "ASK": (args) => {
+                if (this.is_on_stranger()) {
+                    if (this.strangerRelation === 0) {
+                        this.write_narration(`After a bit of time, you hear the stranger answering you`);
+                        this.first_meeting();
+                    } else if (this.strangerRelation === 1) {
+                        switch (this.clean(args[0])) {
+                            case "WEATHER":
+                                this.write_dialogue("I miss the sunlight...");
+                                break;
+
+                            case "PRONOUN":
+                                this.write_dialogue("I don't really mind... You can use \"they/them\" when speaking to me...")
+                                break;
+                        }
+                    } else {
+                        this.write_narration("TODO");
+                    }
+                } else {
+                    this.write_narration("You speak but there is no one to answer you");
+                }
+            },
             "DEBUG": (_) => {
                 if (window.location.hostname === "localhost") {
                     this.write_narration(`You close your eyes and feel instilled with divine knowledge<br/>You are at this.position (${this.pos.x} ; ${this.pos.y})<br/>Your this.forward direction is (${this.forward.x} ; ${this.forward.y})<br/>Target this.position is (${this.posStranger.x} ; ${this.posStranger.y})`);
@@ -217,26 +268,42 @@ class Game_Darkness {
                         this.write_narration(`You pass your ${this.item("hands")} over your ${this.item("clothes")}, you seem to be wearing a cotton pants and short-sleeves shirt`);
                         break;
 
+                    case "STRANGER":
+                        if (this.strangerRelation === 0) {
+                            this.write_narration(`You put your ${this.item("hand")} on their shoulder, they jump a bit and quickly push your hand away before speaking to you`);
+                            this.first_meeting();
+                        } else {
+                            this.write_narration(`You put your ${this.item("hand")} on their shoulder, they jump a bit and push you away`);
+                        }
+                        break;
+
                     default:
                         return false;
                 }
-                this.decrease_hp();
                 return true;
             },
             "USE": (args) => {
                 if (this.clean(args[0]) === "STONE" && this.clean(args[1]) === "GROUND") {
                     this.write_narration(`You place the stone on the ground, when you take it back, you feel like it slightly moved to your ${this.item(this.dir_vector_to_text(this.pos_toward(this.pos.x, this.pos.y, this.posStranger.x, this.posStranger.y)).toLowerCase())}`);
-                    this.decrease_hp();
                     return true;
                 }
                 return false;
             },
             "WAIT": (_) => {
-                this.write_narration("You gaze into nothingness and count the seconds");
-                this.decrease_hp();
+                if (this.is_on_stranger() && this.strangerRelation > 0) {
+                    this.write_narration("You look into nothingness");
+                } else {
+                    this.write_narration("You look into nothingness and feel the darkness enveloping yourself");
+                    this.decrease_hp();
+                }
                 return true;
             },
             "MOVE": (args) => {
+                let wasOnStranger = this.is_on_stranger();
+                if (wasOnStranger && Math.floor(Math.random() * 10)) {
+                    this.write_dialogue("Don't leave...");
+                }
+
                 if (args.length === 0) {
                     this.write_narration("You take a random direction and walk for a bit, you don't feel like anything changed around you");
                     this.move_random();
@@ -245,27 +312,49 @@ class Game_Darkness {
                     if (targetDir === null) {
                         return false;
                     }
-                    this.write_narration(`You walk to your ${args[0].toLowerCase()} but don't feel like anything changed around you`);
+
                     this.pos.x += targetDir.x;
                     this.pos.y += targetDir.y;
                     this.forward.x = targetDir.x;
                     this.forward.y = targetDir.y;
-                }
-                if (this.is_on_stranger()) { // Shouldn't happen in random move since we rig it but might as well be safe
-                    this.write_narration("TODO");
-                } else {
-                    this.decrease_hp();
+
+                    if (this.is_on_stranger()) {
+                        if (this.strangerRelation === 0) {
+                            this.write_narration(`You walk to your ${args[0].toLowerCase()}, you hear what feel like ${this.item("someone")} panting respiration`);
+                        } else {
+                            this.write_narration(`You walk to your ${args[0].toLowerCase()} and hear the ${this.item("stranger")} greeting you with a low voice`);
+                            this.write_dialogue("Welcome back");
+                        }
+                    } else {
+                        this.write_narration(`You walk to your ${args[0].toLowerCase()} but don't feel like anything changed around you`);
+                    }
+
+                    if (this.strangerRelation > 0) {
+                        if (wasOnStranger) {
+                            this.write_narration("You feel the dreadness of the darkness as you leave your confort spot");
+                        } else if (this.is_on_stranger()) {
+                            this.write_narration("You feel more at ease knowing you are not alone anymore");
+                        }
+                    }
                 }
                 return true;
             }
         }
     };
 
+    write_dialogue(text, speaker) {
+        this.rpgDiv.innerHTML += `<span class="dialogue ${speaker}">"${text}"</span><br/><br/>`;
+    }
+
     write_narration(text) {
         this.rpgDiv.innerHTML += `${text}<br/><br/>`;
     }
 
     decrease_hp() {
+        if (this.is_on_stranger() && this.strangerRelation > 1) { // Prevent loosing HP
+            return;
+        }
+
         this.mentalHp--;
         if (this.mentalHp % 5 === 0) {
             this.write_narration("You feel darkness consuming your soul a bit more");
@@ -332,10 +421,6 @@ class Game_Darkness {
                 if (!(input in choices) || !choices[input](args)) {
                     switch (input)
                     {
-                        case "this.itemS":
-                            this.write_narration("You don't have anything");
-                            break;
-
                         case "HELP":
                             this.write_narration(`Possible actions:<br/>${Object.keys(this.actions).map(x => `${this.to_sentence_case(x)} (${this.argument_text(this.actions[x])})`).join("<br/>")}`);
                             break;
@@ -343,6 +428,9 @@ class Game_Darkness {
                         default:
                             this.write_narration("You can't do that here");
                             break;
+                    }
+                    if (this.actions[input].looseHP) {
+                        this.decrease_hp();
                     }
                 }
             }
