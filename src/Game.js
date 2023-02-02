@@ -1,4 +1,5 @@
 export * from "./actions"
+export { Screen } from "./Screen"
 
 export class Game_Darkness {
     constructor() {
@@ -6,26 +7,13 @@ export class Game_Darkness {
         let y = 5 - x * (Math.floor(Math.random() * 2) == 0 ? -1 : 1);
         this.posStranger = { x: x, y: y };
 
-        document.getElementById("rpg-enter").addEventListener("click", this.on_input);
-        document.getElementById("rpg-input").addEventListener("keyup", (e) => {
-            if (e.code === "Enter") {
-                this.on_input();
-            }
-        })
-        this.rpgInput = document.getElementById("rpg-input-field");
-        this.rpgDiv = document.getElementById("rpg-output");
+        this.screen = new Screen(this.on_input);
 
-        let canvas = document.getElementById("rpg-mini-map");
-        let ctx = canvas.getContext("2d");
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        this.write_narration("You open your eyes, everything around you is pitch black that you can't even see your hands.<br/>You try to look into your memories but can't remember anything.<br/>What do you do?<br/><small>(Words in <b>bold</b> are items you can interact with, however some of them won't be mentionned until you do so)</small>");
+        this.screen.write_narration("You open your eyes, everything around you is pitch black that you can't even see your hands.<br/>You try to look into your memories but can't remember anything.<br/>What do you do?<br/><small>(Words in <b>bold</b> are items you can interact with, however some of them won't be mentionned until you do so)</small>");
     
     }
 
-    rpgDiv;
-    rpgInput;
+    screen;
 
     mentalHp = 15;
 
@@ -204,17 +192,9 @@ export class Game_Darkness {
     }
 
     first_meeting() {
-        this.write_dialogue("I.. didn't expect to find someone", "stranger");
-        this.write_narration("You feel more at ease knowing you are not alone anymore");
+        this.screen.write_dialogue("I.. didn't expect to find someone", "stranger");
+        this.screen.write_narration("You feel more at ease knowing you are not alone anymore");
         this.strangerRelation = 1;
-    }
-
-    write_dialogue(text, speaker) {
-        this.rpgDiv.innerHTML += `<span class="dialogue ${speaker}">"${text}"</span><br/><br/>`;
-    }
-
-    write_narration(text) {
-        this.rpgDiv.innerHTML += `${text}<br/><br/>`;
     }
 
     decrease_hp() {
@@ -224,17 +204,11 @@ export class Game_Darkness {
 
         this.mentalHp--;
         if (this.mentalHp % 5 === 0) {
-            this.write_narration("You feel darkness consuming your soul a bit more");
+            this.screen.write_narration("You feel darkness consuming your soul a bit more");
         }
         if (this.mentalHp === 0) {
-            this.write_narration(`You curl up on the ${this.item("ground")} and close your eyes, trying to feel the last of hope you still have inside you`);
+            this.screen.write_narration(`You curl up on the ${this.item("ground")} and close your eyes, trying to feel the last of hope you still have inside you`);
         }
-    }
-
-    clear_input() {
-        this.rpgInput.value = "";
-        this.rpgDiv.scrollTop = this.rpgDiv.scrollHeight;
-        this.rpgInput.focus();
     }
 
     to_sentence_case(text) {
@@ -263,19 +237,19 @@ export class Game_Darkness {
         }
 
         try
-        {    
-            this.rpgDiv.innerHTML += `<b>> ${input} ${args}</b><br/>`;
+        {
+            this.screen.write_input(input, args);
             if (this.mentalHp === 0)
             {
-                this.write_narration("There is no hope");
+                this.screen.write_narration("There is no hope");
             }
             else if (!(input in this.actions))
             {
-                this.write_narration("Unknown action, enter \"Help\" for the list of actions");
+                this.screen.write_narration("Unknown action, enter \"Help\" for the list of actions");
             }
             else if (args.length < this.actions[input].argCountMin || args.length > this.actions[input].argCountMax)
             {
-                this.write_narration(`${this.to_sentence_case(input)} takes ${this.argument_text(this.actions[input])}`);
+                this.screen.write_narration(`${this.to_sentence_case(input)} takes ${this.argument_text(this.actions[input])}`);
             }
             else
             {
@@ -289,11 +263,11 @@ export class Game_Darkness {
                     switch (input)
                     {
                         case "HELP":
-                            this.write_narration(`Possible actions:<br/>${Object.keys(this.actions).map(x => `${this.to_sentence_case(x)} (${this.argument_text(this.actions[x])})`).join("<br/>")}`);
+                            this.screen.write_narration(`Possible actions:<br/>${Object.keys(this.actions).map(x => `${this.to_sentence_case(x)} (${this.argument_text(this.actions[x])})`).join("<br/>")}`);
                             break;
 
                         default:
-                            this.write_narration("You can't do that here");
+                            this.screen.write_narration("You can't do that here");
                             break;
                     }
                     if (this.actions[input].looseHP) {
