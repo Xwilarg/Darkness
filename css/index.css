@@ -58,10 +58,10 @@
     color: red;
 }
 
-.dialogue .me {
+.dialogue.me {
     color: blue;
 }
 
-.dialogue .stranger {
+.dialogue.stranger {
     color: green;
 }

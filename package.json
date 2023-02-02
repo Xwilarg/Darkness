@@ -1,10 +1,10 @@
 {
   "devDependencies": {
-    "minify": "^9.1.0",
+    "esbuild": "^0.17.5",
     "mkdirp": "^1.0.4"
   },
   "scripts": {
-    "build": "mkdirp js/ && minify src/Game.js > js/Game.js && minify src/init.js > js/init.js",
+    "build": "mkdirp js/ && esbuild src/Game.js --bundle --minify --outfile=js/Game.js && esbuild src/init.js --bundle --minify --outfile=js/init.js",
     "serve": "npm run build && php -S localhost:8182"
   }
 }
