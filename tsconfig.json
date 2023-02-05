@@ -1,11 +1,11 @@
 {
     "compilerOptions": {
-      "strict": true,
-      "noImplicitAny": true,
-      "noEmitOnError": true,
-      "strictNullChecks": true,
-      "removeComments": true,
-      "target": "es6",
-      "moduleResolution": "node"
+        "strict": true,
+        "noImplicitAny": true,
+        "noEmitOnError": true,
+        "strictNullChecks": true,
+        "removeComments": true,
+        "target": "es6",
+        "moduleResolution": "node"
     }
 }

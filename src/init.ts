@@ -1,6 +1,6 @@
-import { Game_Darkness } from './Game'
+import { Game_Darkness } from "./Game";
 
 window.onload = function () {
     /* eslint-disable no-new */
-    new Game_Darkness()
-}
+    new Game_Darkness();
+};
