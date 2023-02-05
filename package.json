@@ -2,8 +2,7 @@
   "scripts": {
     "build": "webpack",
     "serve": "npm run build && php -S localhost:8182",
-    "lint": "eslint --fix . && prettier .",
-    "prepare": "husky install"
+    "lint": "eslint --fix . && prettier ."
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.50.0",
