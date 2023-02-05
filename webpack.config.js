@@ -12,8 +12,8 @@ module.exports = {
         ]
     },
     entry: {
-        init: './src/background/init.ts',
-        Game: './src/content/Game.ts'
+        init: './src/init.ts',
+        Game: './src/Game.ts'
     },
     resolve: {
         extensions: ['.ts']

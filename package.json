@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "mkdirp js/ && esbuild src/Game.js --bundle --minify --outfile=js/Game.js && esbuild src/init.js --bundle --minify --outfile=js/init.js",
+    "build": "webpack",
     "serve": "npm run build && php -S localhost:8182",
     "lint": "eslint --fix . && prettier .",
     "prepare": "husky install"
