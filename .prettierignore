@@ -1,1 +1,4 @@
 package-lock.json
+js/
+composer.lock
+vendor/
