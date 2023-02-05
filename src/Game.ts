@@ -29,18 +29,18 @@ export class Game_Darkness {
         ASK: new Action(1, 1, true)
     }
 
-    #to_sentence_case (text: string) {
+    #to_sentence_case (text: string): string {
         return text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
     }
 
-    #argument_text (action: Action) {
+    #argument_text (action: Action): string {
         if (action.argCountMin === action.argCountMax) {
             return `${action.argCountMin} argument${(action.argCountMin > 1 ? 's' : '')}`
         }
         return `${action.argCountMin} to ${action.argCountMax} argument${(action.argCountMax > 1 ? 's' : '')}`
     }
 
-    on_input () {
+    on_input (): void {
         const text = this.#screen.get_input()
         let input = text[0]
         let args = text.slice(1)

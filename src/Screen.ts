@@ -32,7 +32,7 @@ export default class Screen {
      * @param args Arguments of the command
      */
     write_input (input: string, args: string[]): void {
-        this.#rpgDiv.innerHTML += `<b>> ${input} ${args}</b><br/>`
+        this.#rpgDiv.innerHTML += `<b>> ${input} ${args.join(' ')}</b><br/>`
     }
 
     /**

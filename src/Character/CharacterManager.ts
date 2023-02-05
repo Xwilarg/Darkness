@@ -6,7 +6,7 @@ import { item } from '../Utils/parsing'
 export default class CharacterManager {
     constructor () {
         const x = Math.floor(Math.random() * 10) - 5
-        const y = 5 - x * (Math.floor(Math.random() * 2) == 0 ? -1 : 1)
+        const y = 5 - x * (Math.floor(Math.random() * 2) === 0 ? -1 : 1)
         this.#stranger = new Character(1, new Vector(x, y))
 
         this.#me = new Character(15)
@@ -40,7 +40,7 @@ export default class CharacterManager {
         cTarget.set_pos(cTarget.get_pos().add(value))
     }
 
-    get_pos_toward (target: 'me' | 'stranger', reference: 'me' | 'stranger') {
+    get_pos_toward (target: 'me' | 'stranger', reference: 'me' | 'stranger'): Vector {
         const c1 = this.#string_to_character(target)
         const c2 = this.#string_to_character(reference)
         return c1.get_pos_toward(c2.get_pos())
@@ -62,7 +62,7 @@ export default class CharacterManager {
         this.#me.move_random(this.#stranger.get_pos())
     }
 
-    decrease_player_hp (screen: Screen) {
+    decrease_player_hp (screen: Screen): void {
         if (this.is_player_on_stranger() && this.#stranger.get_relationship() > 0) { // Prevent loosing HP
             return
         }

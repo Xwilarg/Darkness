@@ -31,7 +31,7 @@ export default class ActionManager {
             },
             DEBUG: (_) => {
                 if (window.location.hostname === 'localhost') {
-                    screen.write_narration(`You close your eyes and feel instilled with divine knowledge<br/>You are at this.position ${characterManager.get_pos('me').to_string()}<br/>Your this.forward direction is ${characterManager.get_forward('me').to_string()}<br/>Target this.position is ${characterManager.get_pos('stranger')}`)
+                    screen.write_narration(`You close your eyes and feel instilled with divine knowledge<br/>You are at this.position ${characterManager.get_pos('me').to_string()}<br/>Your this.forward direction is ${characterManager.get_forward('me').to_string()}<br/>Target this.position is ${characterManager.get_pos('stranger').to_string()}`)
                 } else {
                     screen.write_narration('You close your eyes but nothing change')
                     characterManager.decrease_player_hp(screen)
@@ -96,7 +96,7 @@ export default class ActionManager {
             },
             MOVE: (args) => {
                 const wasOnStranger = characterManager.is_player_on_stranger()
-                if (wasOnStranger && Math.floor(Math.random() * 10)) {
+                if (wasOnStranger && Math.floor(Math.random() * 10) === 0) {
                     screen.write_dialogue("Don't leave...", 'stranger')
                 }
 
@@ -176,9 +176,11 @@ export default class ActionManager {
             else if (forward.y === -1) targetX = -1
             if (forward.x === 1) targetY = 1
             else if (forward.x === -1) targetY = -1
+        } else {
+            return null
         }
 
-        return null
+        return new Vector(targetX, targetY)
     }
 
     #first_meeting (screen: Screen, characterManager: CharacterManager): void {

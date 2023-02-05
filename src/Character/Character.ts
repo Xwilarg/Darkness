@@ -39,7 +39,7 @@ export default class Character {
         return this.#mentalHp > 0
     }
 
-    decrease_mental_hp () {
+    decrease_mental_hp (): number {
         this.#mentalHp--
         return this.#mentalHp
     }
@@ -72,10 +72,10 @@ export default class Character {
             this.#pos.y -= dir.y
         } else {
             const r = Math.floor(Math.random() * 4)
-            if (r == 0) this.#pos.x += 1
-            else if (r == 1) this.#pos.x -= 1
-            else if (r == 2) this.#pos.y += 1
-            else if (r == 3) this.#pos.y -= 1
+            if (r === 0) this.#pos.x += 1
+            else if (r === 1) this.#pos.x -= 1
+            else if (r === 2) this.#pos.y += 1
+            else if (r === 3) this.#pos.y -= 1
         }
     }
 }
