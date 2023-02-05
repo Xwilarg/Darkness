@@ -79,7 +79,7 @@ export class Game_Darkness {
                     }
                 }
             }
-        } catch (error) {
+        } catch (error: any) {
             this.#screen.write_error(error)
         }
 
