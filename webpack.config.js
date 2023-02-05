@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 
 module.exports = {
     mode: 'production',
@@ -7,7 +7,7 @@ module.exports = {
             {
                 test: /\.ts$/,
                 use: 'ts-loader',
-                exclude: /node_modules/,
+                exclude: /node_modules/
             }
         ]
     },
@@ -16,10 +16,10 @@ module.exports = {
         Game: './src/content/Game.ts'
     },
     resolve: {
-        extensions: ['.ts'],
+        extensions: ['.ts']
     },
     output: {
         filename: '[name].js',
         path: path.resolve(__dirname, 'js')
     }
-};
+}
