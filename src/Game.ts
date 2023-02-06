@@ -36,13 +36,9 @@ export class Game_Darkness {
 
     #argument_text(action: Action): string {
         if (action.argCountMin === action.argCountMax) {
-            return `${action.argCountMin} argument${
-                action.argCountMin > 1 ? "s" : ""
-            }`;
+            return `${action.argCountMin} argument${action.argCountMin > 1 ? "s" : ""}`;
         }
-        return `${action.argCountMin} to ${action.argCountMax} argument${
-            action.argCountMax > 1 ? "s" : ""
-        }`;
+        return `${action.argCountMin} to ${action.argCountMax} argument${action.argCountMax > 1 ? "s" : ""}`;
     }
 
     on_input(): void {
@@ -59,18 +55,9 @@ export class Game_Darkness {
             if (!this.#characterManager.is_player_alive()) {
                 this.#screen.write_narration(getString("GAMEOVER"));
             } else if (!(input in this.#actions)) {
-                this.#screen.write_narration(
-                    'Unknown action, enter "Help" for the list of actions'
-                );
-            } else if (
-                args.length < this.#actions[input].argCountMin ||
-                args.length > this.#actions[input].argCountMax
-            ) {
-                this.#screen.write_narration(
-                    `${this.#to_sentence_case(
-                        input
-                    )} takes ${this.#argument_text(this.#actions[input])}`
-                );
+                this.#screen.write_narration('Unknown action, enter "Help" for the list of actions');
+            } else if (args.length < this.#actions[input].argCountMin || args.length > this.#actions[input].argCountMax) {
+                this.#screen.write_narration(`${this.#to_sentence_case(input)} takes ${this.#argument_text(this.#actions[input])}`);
             } else {
                 if (input === "USE" && clean(args[0]) === "HANDS") {
                     // Using your hands on smth is the same as touching it
@@ -78,33 +65,19 @@ export class Game_Darkness {
                     args = [args[1]];
                 }
 
-                const choices = this.#actionManager.getActions(
-                    this.#screen,
-                    this.#characterManager
-                );
+                const choices = this.#actionManager.getActions(this.#screen, this.#characterManager);
                 if (!(input in choices) || !choices[input](args)) {
                     switch (input) {
                         case "HELP":
                             this.#screen.write_narration(
-                                `Possible actions:<br/>${Object.keys(
-                                    this.#actions
-                                )
-                                    .map(
-                                        (x) =>
-                                            `${this.#to_sentence_case(
-                                                x
-                                            )} (${this.#argument_text(
-                                                this.#actions[x]
-                                            )})`
-                                    )
+                                `Possible actions:<br/>${Object.keys(this.#actions)
+                                    .map((x) => `${this.#to_sentence_case(x)} (${this.#argument_text(this.#actions[x])})`)
                                     .join("<br/>")}`
                             );
                             break;
 
                         default:
-                            this.#screen.write_narration(
-                                "You can't do that here"
-                            );
+                            this.#screen.write_narration("You can't do that here");
                             break;
                     }
                     if (this.#actions[input].looseHP) {

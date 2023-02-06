@@ -1,7 +1,7 @@
 import Vector from "../Utils/Vector";
 import Character from "./Character";
 import type Screen from "../Screen";
-import { item } from "../Utils/parsing";
+import getString from "../Data/strings";
 
 export default class CharacterManager {
     constructor() {
@@ -42,10 +42,7 @@ export default class CharacterManager {
         cTarget.set_pos(cTarget.get_pos().add(value));
     }
 
-    get_pos_toward(
-        target: "me" | "stranger",
-        reference: "me" | "stranger"
-    ): Vector {
+    get_pos_toward(target: "me" | "stranger", reference: "me" | "stranger"): Vector {
         const c1 = this.#string_to_character(target);
         const c2 = this.#string_to_character(reference);
         return c1.get_pos_toward(c2.get_pos());
@@ -68,26 +65,17 @@ export default class CharacterManager {
     }
 
     decrease_player_hp(screen: Screen): void {
-        if (
-            this.is_player_on_stranger() &&
-            this.#stranger.get_relationship() > 0
-        ) {
+        if (this.is_player_on_stranger() && this.#stranger.get_relationship() > 0) {
             // Prevent loosing HP
             return;
         }
 
         const hp = this.#me.decrease_mental_hp();
         if (hp % 5 === 0) {
-            screen.write_narration(
-                "You feel darkness consuming your soul a bit more"
-            );
+            screen.write_narration(getString("LOOSE_HP"));
         }
         if (hp === 0) {
-            screen.write_narration(
-                `You curl up on the ${item(
-                    "ground"
-                )} and close your eyes, trying to feel the last of hope you still have inside you`
-            );
+            screen.write_narration(getString("NO_HP"));
         }
     }
 

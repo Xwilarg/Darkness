@@ -3,22 +3,16 @@
  */
 export default class Screen {
     constructor(onInput: () => void) {
-        document
-            .getElementById("rpg-enter")!
-            .addEventListener("click", onInput);
+        document.getElementById("rpg-enter")!.addEventListener("click", onInput);
         document.getElementById("rpg-input")!.addEventListener("keyup", (e) => {
             if (e.code === "Enter") {
                 onInput();
             }
         });
-        this.#rpgInput = document.getElementById(
-            "rpg-input-field"
-        )! as HTMLInputElement;
+        this.#rpgInput = document.getElementById("rpg-input-field")! as HTMLInputElement;
         this.#rpgDiv = document.getElementById("rpg-output")!;
 
-        const canvas = document.getElementById(
-            "rpg-mini-map"
-        )! as HTMLCanvasElement;
+        const canvas = document.getElementById("rpg-mini-map")! as HTMLCanvasElement;
         const ctx = canvas.getContext("2d")!;
         ctx.fillStyle = "black";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
