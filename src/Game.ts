@@ -3,14 +3,13 @@ import ActionManager from "./Action/ActionManager";
 import Screen from "./Screen";
 import { clean } from "./Utils/parsing";
 import CharacterManager from "./Character/CharacterManager";
+import getString from "./Data/strings";
 
 export class Game_Darkness {
     constructor() {
         this.#screen = new Screen(this.on_input);
 
-        this.#screen.write_narration(
-            "You open your eyes, everything around you is pitch black that you can't even see your hands.<br/>You try to look into your memories but can't remember anything.<br/>What do you do?<br/><small>(Words in <b>bold</b> are items you can interact with, however some of them won't be mentionned until you do so)</small>"
-        );
+        this.#screen.write_narration(getString("INTRODUCTION"));
 
         this.#actionManager = new ActionManager();
         this.#characterManager = new CharacterManager();
@@ -58,7 +57,7 @@ export class Game_Darkness {
         try {
             this.#screen.write_input(input, args);
             if (!this.#characterManager.is_player_alive()) {
-                this.#screen.write_narration("There is no hope");
+                this.#screen.write_narration(getString("GAMEOVER"));
             } else if (!(input in this.#actions)) {
                 this.#screen.write_narration(
                     'Unknown action, enter "Help" for the list of actions'
