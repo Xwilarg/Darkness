@@ -72,10 +72,10 @@ export default class CharacterManager {
 
         const hp = this.#me.decrease_mental_hp();
         if (hp % 5 === 0) {
-            screen.write_narration(getString("LOOSE_HP"));
+            screen.write_narration(getString("LOOSE_HP")!);
         }
         if (hp === 0) {
-            screen.write_narration(getString("NO_HP"));
+            screen.write_narration(getString("NO_HP")!);
         }
     }
 

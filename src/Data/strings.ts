@@ -1,6 +1,6 @@
 import { item } from "../Utils/parsing";
 
-export default function getString(key: string, args: string[] = []): string {
+export default function getString(key: string, args: string[] = []): string | null {
     switch (key) {
         case "GAMEOVER":
             return "There is no hope";
@@ -24,7 +24,9 @@ export default function getString(key: string, args: string[] = []): string {
         case "ASK_WEATHER_1":
             return "I miss the sunlight...";
         case "ASK_PRONOUN_1":
-            return 'I don\'t really mind... You can use "they/them" when speaking to me...';
+            return 'I don\'t really mind... "they/them" is fine...';
+        case "ASK_NAME_1":
+            return "I don't have one... Anymore...";
 
         case "ITEMS":
             return `You check inside your pockets and find what feels like a round ${item("stone")}`;
@@ -75,6 +77,6 @@ export default function getString(key: string, args: string[] = []): string {
             return "You feel more at ease knowing you are not alone anymore";
 
         default:
-            throw new Error(`Unknown key ${key}`);
+            return null;
     }
 }

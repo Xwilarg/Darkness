@@ -9,7 +9,7 @@ export class Game_Darkness {
     constructor() {
         this.#screen = new Screen(this.on_input);
 
-        this.#screen.write_narration(getString("INTRODUCTION"));
+        this.#screen.write_narration(getString("INTRODUCTION")!);
 
         this.#actionManager = new ActionManager();
         this.#characterManager = new CharacterManager();
@@ -53,7 +53,7 @@ export class Game_Darkness {
         try {
             this.#screen.write_input(input, args);
             if (!this.#characterManager.is_player_alive()) {
-                this.#screen.write_narration(getString("GAMEOVER"));
+                this.#screen.write_narration(getString("GAMEOVER")!);
             } else if (!(input in this.#actions)) {
                 this.#screen.write_narration('Unknown action, enter "Help" for the list of actions');
             } else if (args.length < this.#actions[input].argCountMin || args.length > this.#actions[input].argCountMax) {

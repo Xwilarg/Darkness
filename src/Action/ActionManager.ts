@@ -10,23 +10,18 @@ export default class ActionManager {
             ASK: (args: string[]) => {
                 if (characterManager.is_player_on_stranger()) {
                     if (characterManager.get_relationship("stranger") === 0) {
-                        screen.write_narration(getString("ASK_0"));
+                        screen.write_narration(getString("ASK_0")!);
                         this.#first_meeting(screen, characterManager);
-                    } else if (characterManager.get_relationship("stranger") === 1) {
-                        switch (clean(args[0])) {
-                            case "WEATHER":
-                                screen.write_dialogue(getString("ASK_WEATHER_1"), "stranger");
-                                break;
-
-                            case "PRONOUN":
-                                screen.write_dialogue(getString("ASK_PRONOUN_1"), "stranger");
-                                break;
-                        }
                     } else {
-                        screen.write_narration("TODO");
+                        const targetKey = `ASK_${clean(args[0])}_${characterManager.get_relationship("stranger")}`;
+                        const str = getString(targetKey);
+                        if (str === null) {
+                            return false;
+                        }
+                        screen.write_dialogue(str, "stranger");
                     }
                 } else {
-                    screen.write_narration(getString("ASK_NONE"));
+                    screen.write_narration(getString("ASK_NONE")!);
                 }
                 return true; // TODO
             },
@@ -46,44 +41,25 @@ export default class ActionManager {
                 return true;
             },
             ITEMS: (_) => {
-                screen.write_narration(getString("ITEMS"));
+                screen.write_narration(getString("ITEMS")!);
                 return true;
             },
             TOUCH: (args) => {
-                switch (clean(args[0])) {
-                    case "GROUND":
-                        screen.write_narration(getString("TOUCH_GROUND"));
-                        break;
-
-                    case "STONE":
-                        screen.write_narration(getString("TOUCH_STONE"));
-                        break;
-
-                    case "HANDS":
-                        screen.write_narration(getString("TOUCH_HANDS"));
-                        break;
-
-                    case "HEAD":
-                        screen.write_narration(getString("TOUCH_HEAD"));
-                        break;
-
-                    case "BODY":
-                        screen.write_narration(getString("TOUCH_BODY"));
-                        break;
-
-                    case "STRANGER":
-                        if (characterManager.is_player_on_stranger()) {
-                            return false;
-                        } else if (characterManager.get_relationship("stranger") === 0) {
-                            screen.write_narration(getString("TOUCH_STRANGER_0"));
-                            this.#first_meeting(screen, characterManager);
-                        } else {
-                            screen.write_narration(getString("TOUCH_STRANGER_1"));
-                        }
-                        break;
-
-                    default:
+                if (clean(args[0]) === "STRANGER") {
+                    if (characterManager.is_player_on_stranger()) {
                         return false;
+                    } else if (characterManager.get_relationship("stranger") === 0) {
+                        screen.write_narration(getString("TOUCH_STRANGER_0")!);
+                        this.#first_meeting(screen, characterManager);
+                    } else {
+                        screen.write_narration(getString("TOUCH_STRANGER_1")!);
+                    }
+                } else {
+                    const str = getString(`TOUCH_${clean(args[0])}`);
+                    if (str === null) {
+                        return false;
+                    }
+                    screen.write_narration(str);
                 }
                 return true;
             },
@@ -95,7 +71,7 @@ export default class ActionManager {
                                 characterManager.get_pos_toward("me", "stranger"),
                                 characterManager.get_forward("me")
                             ).toLowerCase(),
-                        ])
+                        ])!
                     );
                     return true;
                 }
@@ -103,9 +79,9 @@ export default class ActionManager {
             },
             WAIT: (_) => {
                 if (characterManager.is_player_on_stranger() && characterManager.get_relationship("stranger") > 0) {
-                    screen.write_narration(getString("WAIT_STRANGER_NONE"));
+                    screen.write_narration(getString("WAIT_STRANGER_NONE")!);
                 } else {
-                    screen.write_narration(getString("WAIT_STRANGER_0"));
+                    screen.write_narration(getString("WAIT_STRANGER_0")!);
                     characterManager.decrease_player_hp(screen);
                 }
                 return true;
@@ -113,11 +89,11 @@ export default class ActionManager {
             MOVE: (args) => {
                 const wasOnStranger = characterManager.is_player_on_stranger();
                 if (wasOnStranger && characterManager.get_relationship("stranger") > 1 && Math.floor(Math.random() * 10) === 0) {
-                    screen.write_dialogue(getString("MOVE_STRANGER_SPE"), "stranger");
+                    screen.write_dialogue(getString("MOVE_STRANGER_SPE")!, "stranger");
                 }
 
                 if (args.length === 0) {
-                    screen.write_narration(getString("MOVE_RANDOM"));
+                    screen.write_narration(getString("MOVE_RANDOM")!);
                     characterManager.move_player_random();
                 } else {
                     const targetDir = this.#text_to_dir_vector(args[0], characterManager.get_forward("me"));
@@ -130,20 +106,20 @@ export default class ActionManager {
 
                     if (characterManager.is_player_on_stranger()) {
                         if (characterManager.get_relationship("stranger") === 0) {
-                            screen.write_narration(getString("MOVE_STRANGER_0", [args[0].toLowerCase()]));
+                            screen.write_narration(getString("MOVE_STRANGER_0", [args[0].toLowerCase()])!);
                         } else {
-                            screen.write_narration(getString("MOVE_STRANGER_1", [args[0].toLowerCase()]));
-                            screen.write_dialogue(getString("MOVE_STRANGER_GREETINGS"), "stranger");
+                            screen.write_narration(getString("MOVE_STRANGER_1", [args[0].toLowerCase()])!);
+                            screen.write_dialogue(getString("MOVE_STRANGER_GREETINGS")!, "stranger");
                         }
                     } else {
-                        screen.write_narration(getString("MOVE_DIRECTION", [args[0].toLowerCase()]));
+                        screen.write_narration(getString("MOVE_DIRECTION", [args[0].toLowerCase()])!);
                     }
 
                     if (characterManager.get_relationship("stranger") > 0) {
                         if (wasOnStranger) {
-                            screen.write_narration(getString("MOVE_DARKNESS_ON"));
+                            screen.write_narration(getString("MOVE_DARKNESS_ON")!);
                         } else if (characterManager.is_player_on_stranger()) {
-                            screen.write_narration(getString("MOVE_DARKNESS_OFF"));
+                            screen.write_narration(getString("MOVE_DARKNESS_OFF")!);
                         }
                     }
                 }
@@ -197,8 +173,8 @@ export default class ActionManager {
     }
 
     #first_meeting(screen: Screen, characterManager: CharacterManager): void {
-        screen.write_dialogue(getString("FIRST_MEETING_0"), "stranger");
-        screen.write_narration(getString("FIRST_MEETING_1"));
+        screen.write_dialogue(getString("FIRST_MEETING_0")!, "stranger");
+        screen.write_narration(getString("FIRST_MEETING_1")!);
         characterManager.set_stranger_relationship(1);
     }
 }
