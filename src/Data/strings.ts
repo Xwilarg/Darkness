@@ -9,7 +9,8 @@ export default function getString(key: string, args: string[] = []): string | nu
                 "You open your eyes, everything around you is pitch black that you can't even see your hands.<br/>" +
                 "You try to look into your memories but can't remember anything.<br/>" +
                 "What do you do?<br/>" +
-                "<small>(Words in <b>bold</b> are items you can interact with, however some of them won't be mentionned until you do so)</small>"
+                "<small>(Words in <b>bold</b> are items you can interact with, however some of them won't be mentionned until you do so)<br/>" +
+                "(Also don't be afraid to try things! You can just reset the game by refreshing the page anyway)</small>"
             );
 
         case "LOOSE_HP":
@@ -48,6 +49,8 @@ export default function getString(key: string, args: string[] = []): string | nu
 
         case "USE_STONE_GROUND":
             return `You place the stone on the ground, when you take it back, you feel like it slightly moved to your ${item(args[0])}`;
+        case "USE_STONE_GROUND_REACH":
+            return `You place the stone on the ground, when you take it back, you feel like it slightly toward the ${item("stranger")}`;
 
         case "WAIT_STRANGER_NONE":
             return "You look into nothingness";

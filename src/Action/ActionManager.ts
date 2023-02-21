@@ -65,14 +65,18 @@ export default class ActionManager {
             },
             USE: (args) => {
                 if (clean(args[0]) === "STONE" && clean(args[1]) === "GROUND") {
-                    screen.write_narration(
-                        getString("USE_STONE_GROUND", [
-                            this.#dir_vector_to_text(
-                                characterManager.get_pos_toward("me", "stranger"),
-                                characterManager.get_forward("me")
-                            ).toLowerCase(),
-                        ])!
-                    );
+                    if (characterManager.is_player_on_stranger()) {
+                        getString("USE_STONE_GROUND_REACH")!
+                    } else {
+                        screen.write_narration(
+                            getString("USE_STONE_GROUND", [
+                                this.#dir_vector_to_text(
+                                    characterManager.get_pos_toward("me", "stranger"),
+                                    characterManager.get_forward("me")
+                                ).toLowerCase(),
+                            ])!
+                        );
+                    }
                     return true;
                 }
                 return false;

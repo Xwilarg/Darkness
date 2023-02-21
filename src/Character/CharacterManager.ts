@@ -5,11 +5,11 @@ import getString from "../Data/strings";
 
 export default class CharacterManager {
     constructor() {
-        const x = Math.floor(Math.random() * 10) - 5;
+        const x = Math.floor(Math.random() * 6) - 3;
         const y = 5 - x * (Math.floor(Math.random() * 2) === 0 ? -1 : 1);
         this.#stranger = new Character(1, new Vector(x, y));
 
-        this.#me = new Character(15);
+        this.#me = new Character(10);
     }
 
     #string_to_character(value: "me" | "stranger"): Character {
