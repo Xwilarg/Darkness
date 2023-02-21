@@ -7,7 +7,9 @@ import getString from "./Data/strings";
 
 export class Game_Darkness {
     constructor() {
-        this.#screen = new Screen(this.on_input);
+        this.#screen = new Screen(() => {
+            this.on_input(this);
+        });
 
         this.#screen.write_narration(getString("INTRODUCTION")!);
 
@@ -41,8 +43,16 @@ export class Game_Darkness {
         return `${action.argCountMin} to ${action.argCountMax} argument${action.argCountMax > 1 ? "s" : ""}`;
     }
 
-    on_input(): void {
-        const text = this.#screen.get_input();
+    getScreen(): Screen {
+        return this.#screen;
+    }
+
+    getActions(): Record<string, Action> {
+        return this.#actions;
+    }
+
+    on_input(game: Game_Darkness): void {
+        const text = game.getScreen().get_input();
         let input = text[0];
         let args = text.slice(1);
 
@@ -51,13 +61,13 @@ export class Game_Darkness {
         }
 
         try {
-            this.#screen.write_input(input, args);
-            if (!this.#characterManager.is_player_alive()) {
-                this.#screen.write_narration(getString("GAMEOVER")!);
-            } else if (!(input in this.#actions)) {
-                this.#screen.write_narration('Unknown action, enter "Help" for the list of actions');
-            } else if (args.length < this.#actions[input].argCountMin || args.length > this.#actions[input].argCountMax) {
-                this.#screen.write_narration(`${this.#to_sentence_case(input)} takes ${this.#argument_text(this.#actions[input])}`);
+            game.getScreen().write_input(input, args);
+            if (!game.#characterManager.is_player_alive()) {
+                game.getScreen().write_narration(getString("GAMEOVER")!);
+            } else if (!(input in game.getActions())) {
+                game.getScreen().write_narration('Unknown action, enter "Help" for the list of actions');
+            } else if (args.length < game.getActions()[input].argCountMin || args.length > game.getActions()[input].argCountMax) {
+                game.getScreen().write_narration(`${game.#to_sentence_case(input)} takes ${game.#argument_text(game.getActions()[input])}`);
             } else {
                 if (input === "USE" && clean(args[0]) === "HANDS") {
                     // Using your hands on smth is the same as touching it
@@ -65,30 +75,30 @@ export class Game_Darkness {
                     args = [args[1]];
                 }
 
-                const choices = this.#actionManager.getActions(this.#screen, this.#characterManager);
+                const choices = game.#actionManager.getActions(game.getScreen(), game.#characterManager);
                 if (!(input in choices) || !choices[input](args)) {
                     switch (input) {
                         case "HELP":
-                            this.#screen.write_narration(
-                                `Possible actions:<br/>${Object.keys(this.#actions)
-                                    .map((x) => `${this.#to_sentence_case(x)} (${this.#argument_text(this.#actions[x])})`)
+                            game.getScreen().write_narration(
+                                `Possible actions:<br/>${Object.keys(game.getActions())
+                                    .map((x) => `${game.#to_sentence_case(x)} (${game.#argument_text(game.getActions()[x])})`)
                                     .join("<br/>")}`
                             );
                             break;
 
                         default:
-                            this.#screen.write_narration("You can't do that here");
+                            game.getScreen().write_narration("You can't do that here");
                             break;
                     }
-                    if (this.#actions[input].looseHP) {
-                        this.#characterManager.decrease_player_hp(this.#screen);
+                    if (game.getActions()[input].looseHP) {
+                        game.#characterManager.decrease_player_hp(game.getScreen());
                     }
                 }
             }
         } catch (error: any) {
-            this.#screen.write_error(error);
+            game.getScreen().write_error(error);
         }
 
-        this.#screen.clear_input();
+        game.getScreen().clear_input();
     }
 }
