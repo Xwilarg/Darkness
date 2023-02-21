@@ -5,11 +5,11 @@ import getString from "../Data/strings";
 
 export default class CharacterManager {
     constructor() {
-        const x = Math.floor(Math.random() * 6) - 3;
+        const x = Math.floor(Math.random() * 6) - 2;
         const y = 5 - x * (Math.floor(Math.random() * 2) === 0 ? -1 : 1);
         this.#stranger = new Character(1, new Vector(x, y));
 
-        this.#me = new Character(10);
+        this.#me = new Character(15);
     }
 
     #string_to_character(value: "me" | "stranger"): Character {
@@ -62,6 +62,10 @@ export default class CharacterManager {
 
     move_player_random(): void {
         this.#me.move_random(this.#stranger.get_pos());
+    }
+
+    get_mental_hp(target: "me" | "stranger"): number {
+        return this.#string_to_character(target).get_mental_hp();
     }
 
     decrease_player_hp(screen: Screen): void {

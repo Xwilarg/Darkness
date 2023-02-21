@@ -25,21 +25,6 @@ export default class ActionManager {
                 }
                 return true; // TODO
             },
-            DEBUG: (_) => {
-                if (window.location.hostname === "localhost") {
-                    screen.write_narration(
-                        `You close your eyes and feel instilled with divine knowledge<br/>You are at this.position ${characterManager
-                            .get_pos("me")
-                            .to_string()}<br/>Your this.forward direction is ${characterManager
-                            .get_forward("me")
-                            .to_string()}<br/>Target this.position is ${characterManager.get_pos("stranger").to_string()}`
-                    );
-                } else {
-                    screen.write_narration("You close your eyes but nothing change");
-                    characterManager.decrease_player_hp(screen);
-                }
-                return true;
-            },
             ITEMS: (_) => {
                 screen.write_narration(getString("ITEMS")!);
                 return true;

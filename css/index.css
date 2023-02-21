@@ -58,6 +58,11 @@
     color: red;
 }
 
+.rpg-debug {
+    color: grey;
+    font-size: 10px;
+}
+
 .dialogue.me {
     color: blue;
 }

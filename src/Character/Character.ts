@@ -44,6 +44,10 @@ export default class Character {
         return this.#mentalHp;
     }
 
+    get_mental_hp(): number {
+        return this.#mentalHp;
+    }
+
     get_pos(): Vector {
         return this.#pos;
     }

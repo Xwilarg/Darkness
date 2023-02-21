@@ -25,6 +25,10 @@ export default class Screen {
     write_error(error: string): void {
         this.#rpgDiv.innerHTML += `<span class="rpg-error">An error occured:<br/>${error}</span><br/><br/>`;
     }
+    
+    write_debug(text: string): void {
+        this.#rpgDiv.innerHTML += `<span class="rpg-debug">${text}</span><br/><br/>`;
+    }
 
     /**
      * Display the user input on the screen

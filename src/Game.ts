@@ -28,7 +28,6 @@ export class Game_Darkness {
         USE: new Action(2, 2, true),
         WAIT: new Action(0, 0, true),
         MOVE: new Action(0, 1, true),
-        DEBUG: new Action(0, 0, false),
         ASK: new Action(1, 1, true),
     };
 
@@ -90,13 +89,20 @@ export class Game_Darkness {
                             game.getScreen().write_narration("You can't do that here");
                             break;
                     }
-                    if (game.getActions()[input].looseHP) {
-                        game.#characterManager.decrease_player_hp(game.getScreen());
-                    }
+                }
+                else if (game.getActions()[input].looseHP) {
+                    game.#characterManager.decrease_player_hp(game.getScreen());
                 }
             }
         } catch (error: any) {
             game.getScreen().write_error(error);
+        }
+
+        if (window.location.hostname === "localhost") {
+            game.getScreen().write_debug(
+                `Me: ${this.#characterManager.get_pos("me").to_string()}, f: ${this.#characterManager.get_forward("me").to_string()}, HP: ${this.#characterManager.get_mental_hp("me")}<br/>` +
+                `Stranger: ${this.#characterManager.get_pos("stranger").to_string()}`
+            );
         }
 
         game.getScreen().clear_input();
