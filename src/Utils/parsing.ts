@@ -28,13 +28,6 @@ export function clean(word: string): string {
         case "SOMEONE":
             return "STRANGER";
 
-        case "PRONOUN":
-        case "PRONOUNS":
-            return "PRONOUN";
-
-        case "WEATHER":
-            return "WEATHER";
-
         default:
             return word;
     }

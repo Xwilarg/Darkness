@@ -16,14 +16,15 @@ export default class ActionManager {
                         const targetKey = `ASK_${clean(args[0])}_${characterManager.get_relationship("stranger")}`;
                         const str = getString(targetKey);
                         if (str === null) {
-                            return false;
+                            screen.write_narration(getString("ASK_UNKNOWN")!);
+                        } else {
+                            screen.write_dialogue(str, "stranger");
                         }
-                        screen.write_dialogue(str, "stranger");
                     }
                 } else {
                     screen.write_narration(getString("ASK_NONE")!);
                 }
-                return true; // TODO
+                return true;
             },
             ITEMS: (_) => {
                 screen.write_narration(getString("ITEMS")!);
@@ -63,6 +64,18 @@ export default class ActionManager {
                         );
                     }
                     return true;
+                }
+                else if (clean(args[0]) === "STONE" && clean(args[1]) === "STRANGER") {
+                    if (characterManager.is_player_on_stranger()) {
+                        if (characterManager.get_relationship("stranger") === 0) {
+                            screen.write_narration(getString("TOUCH_STRANGER_0")!);
+                            this.#first_meeting(screen, characterManager);
+                        } else {
+                            screen.write_narration(getString("USE_STONE_STRANGER_P1")!);
+                            screen.write_dialogue(getString("USE_STONE_STRANGER_P2")!, "stranger");
+                        }
+                        return true;
+                    }
                 }
                 return false;
             },

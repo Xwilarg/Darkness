@@ -20,14 +20,16 @@ export default function getString(key: string, args: string[] = []): string | nu
 
         case "ASK_NONE":
             return "You speak but there is no one to answer you";
+        case "ASK_UNKNOWN":
+            return "A bit of time pass but you hear no answer to your question";
         case "ASK_0":
             return `After a bit of time, you hear the ${item("stranger")} answering you`;
         case "ASK_WEATHER_1":
             return "I miss the sunlight...";
-        case "ASK_PRONOUN_1":
-            return 'I don\'t really mind... "they/them" is fine...';
         case "ASK_NAME_1":
             return "I don't have one... Anymore...";
+        case "ASK_STONE_1":
+            return "I have one too...";
 
         case "ITEMS":
             return `You check inside your pockets and find what feels like a round ${item("stone")}`;
@@ -51,6 +53,10 @@ export default function getString(key: string, args: string[] = []): string | nu
             return `You place the stone on the ground, when you take it back, you feel like it slightly moved to your ${item(args[0])}`;
         case "USE_STONE_GROUND_REACH":
             return `You place the stone on the ground, when you take it back, you feel like it slightly toward the ${item("stranger")}`;
+        case "USE_STONE_STRANGER_P1":
+            return `You take the ${item("stone")} from your pocket and hand it over, they take it and give it back after a bit`;
+        case "USE_STONE_STRANGER_P2":
+            return `Yes... It is the same as mine...`;
 
         case "WAIT_STRANGER_NONE":
             return "You look into nothingness";
